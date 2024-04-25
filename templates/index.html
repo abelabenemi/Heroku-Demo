@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House Price Prediction</title>
+    <style>
+        .form-container {
+            text-align: center; /* Center the form */
+        }
+        .form-container form {
+            display: inline-block; /* Display the form as inline-block */
+            text-align: left; /* Align the form contents to the left */
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1 style="text-align: center;">House Price Prediction</h1>
+        <div class="form-container">
+            <form id="predictionForm">
+                <h2><label for="area">Area:</label></h2>
+                <input type="text" id="area" name="area"><br><br>
+
+                <h2><label for="bhk">BHK:</label></h2>
+                <input type="number" id="bhk" name="bhk" min="1"><br><br>
+
+                <h2><label for="bathroom">Bathroom:</label></h2>
+                <input type="number" id="bathroom" name="bathroom" min="1"><br><br>
+
+                <h2><label for="per_sqft">Price Per Sqft:</label></h2>
+                <input type="number" id="per_sqft" name="per_sqft" step="0.01"><br><br>
+
+                <h2><label for="selected_column">Location:</label></h2>
+                <select id="selected_column" name="selected_column">
+                    {% for col in columns %}
+                        {% if col not in ['area', 'bhk', 'bathroom', 'per_sqft', 'furnished', 'semi-furnished', 'unfurnished', 'new_property', 'resale'] %}
+                            <option value="{{ col }}">{{ col }}</option>
+                        {% endif %}
+                    {% endfor %}
+                </select><br><br>
+
+                <button type="button" id="predictBtn">Predict House Price</button>
+            </form>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#predictBtn').click(function () {
+                $.ajax({
+                    type: 'POST',
+                    url: '/predict',
+                    data: $('#predictionForm').serialize(),
+                    success: function (response) {
+                        $('#result').html('Predicted House Price: ' + response.predicted_price);
+                        $('#predictionForm')[0].reset(); // Reset the form
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
